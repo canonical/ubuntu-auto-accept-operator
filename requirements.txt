@@ -18,7 +18,7 @@ ops==3.7.1
     #   charmlibs-pathops
 pydantic==2.13.4
     # via ubuntu-auto-accept-operator (pyproject.toml)
-pydantic-core==2.46.4
+pydantic-core==2.47.0
     # via pydantic
 pyyaml==6.0.3
     # via ops
