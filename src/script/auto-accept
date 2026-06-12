@@ -1,0 +1,88 @@
+#!/usr/bin/python3
+import subprocess
+import sys
+import time
+
+from launchpadlib.launchpad import Launchpad
+
+SERIES = "stonking"
+POCKET = "Proposed"
+QUEUE = "Unapproved"
+SEED_WHITELIST = []
+PACKAGESET_WHITELIST = {"i386-excludes", "i386-whitelist"}
+SEEDED_IN_UBUNTU = "/usr/bin/seeded-in-ubuntu"
+PACKAGE_WHITELIST = []
+
+DEBUG = 0
+if len(sys.argv) > 1 and sys.argv[1] == "debug":
+    DEBUG = 1
+
+# Connect to Launchpad
+lp = Launchpad.login_with("auto-accept", "production", version="devel")
+ubuntu = lp.distributions['ubuntu']
+
+# Get the primary archive
+archive = ubuntu.getArchive(name="primary")
+
+# Get the series
+series = ubuntu.getSeries(name_or_version=SERIES)
+
+if series.status not in ('Active Development', 'Pre-release Freeze'):
+    print("Series no longer in active development; not accepting packages")
+    sys.exit(1)
+
+# Process the packages
+for pkg in series.getPackageUploads(status=QUEUE, pocket=POCKET,
+                                    archive=archive):
+
+    # Whitelisted packages
+    if pkg.package_name in PACKAGE_WHITELIST:
+        if DEBUG:
+            print("%s: Accepting due to whitelist: %s (%s)" %
+                  (time.asctime(), pkg.package_name, pkg.package_version))
+        pkg.acceptFromQueue()
+        continue
+
+    # Extract all the packagesets and skip if in any
+    package_sets = set()
+    for pkgset in lp.packagesets.setsIncludingSource(
+            distroseries=series, sourcepackagename=pkg.package_name):
+        package_sets.add(pkgset.name)
+
+    package_sets -= PACKAGESET_WHITELIST
+    if package_sets:
+        if DEBUG:
+            print("Skipping '%s' because it's in the following packagesets: %s" %
+                  (pkg.package_name, ", ".join(package_sets)))
+        continue
+
+    # Extract all the seeds and skip if in any
+    seed = subprocess.Popen([SEEDED_IN_UBUNTU, pkg.package_name],
+                            universal_newlines=True, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    if seed.wait() != 0 or seed.stderr.read():
+        if DEBUG:
+            print("Skipping '%s' due to Invalid output from seeded-in-ubuntu: %s" %
+                  (pkg.package_name, seed.stderr.read().strip()))
+        continue
+
+    seeds = set()
+    for line in seed.stdout:
+        if not line.startswith("  "):
+            continue
+
+        line = line.strip()
+        seed = line.split(":")[0]
+        if seed in SEED_WHITELIST:
+            continue
+        seeds.add(seed)
+
+    if seeds:
+        if DEBUG:
+            print("Skipping '%s' because it's seeded on: %s" %
+                  (pkg.package_name, ", ".join(seeds)))
+        continue
+
+    print("%s: Accepting: %s (%s)" % (time.asctime(), pkg.package_name,
+                                 pkg.package_version))
+    pkg.acceptFromQueue()

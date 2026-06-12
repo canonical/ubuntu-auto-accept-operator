@@ -1,0 +1,18 @@
+[Unit]
+Description=Ubuntu Auto Accept - Archive queue auto-accept job
+
+[Service]
+Type=oneshot
+Environment="LP_CREDENTIALS_FILE=/home/ubuntu/.config/lp-ubuntu-auto-accept-bot.oauth"
+
+User=ubuntu
+KeyringMode=private
+NoNewPrivileges=true
+PrivateTmp=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictSUIDSGID=yes
+
+ExecStart=run-auto-accept
