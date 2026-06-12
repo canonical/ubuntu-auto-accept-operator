@@ -1,0 +1,50 @@
+name: ubuntu-auto-accept
+type: charm
+title: Ubuntu Auto Accept charm
+summary: Auto-accept safe uploads from the archive Unapproved queue every hour
+description: |
+  **Ubuntu Auto Accept Operator** is a [charm](https://juju.is/charms-architecture)
+  that runs the Ubuntu archive auto-accept job hourly to accept unseeded,
+  non-packageset uploads from the Proposed Unapproved queue.
+
+links:
+  website:
+    - https://charmhub.io/ubuntu-auto-accept
+  issues:
+    - https://github.com/canonical/ubuntu-auto-accept-operator/issues
+  source:
+    - https://github.com/canonical/ubuntu-auto-accept-operator
+
+base: ubuntu@24.04
+platforms:
+  amd64:
+
+parts:
+  ubuntu-auto-accept-charm:
+    source: .
+    plugin: uv
+    build-packages: [git]
+    build-snaps: [astral-uv]
+    override-build: |
+      craftctl default  # Run the default build steps.
+      git describe --always > $CRAFT_PART_INSTALL/version
+
+actions:
+  accept-now:
+    description: |
+      Trigger an immediate run of the auto-accept service.
+
+config:
+  options:
+    enabled:
+      description: |
+        Whether the charm should actively run auto-accept.
+        When false, the timer is disabled and the unit remains paused.
+      type: boolean
+      default: false
+    lpuser_secret_id:
+      description: |
+        The secret ID for a vault containing the Launchpad oauth token
+        under key lpoauthkey, to be used for services that need
+        authenticated users.
+      type: secret

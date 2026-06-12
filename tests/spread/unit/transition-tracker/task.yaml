@@ -1,0 +1,7 @@
+summary: Run ubuntu-auto-accept python module unit tests
+systems:
+  - ubuntu-24.04
+
+execute: |
+  pushd "$SPREAD_PATH"
+  make unit

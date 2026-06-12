@@ -1,0 +1,10 @@
+[Unit]
+Description=Ubuntu Auto Accept - Scheduled runs
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
