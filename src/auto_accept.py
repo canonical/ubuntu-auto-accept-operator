@@ -34,10 +34,12 @@ class AutoAccept:
         if juju_http_proxy:
             logger.debug("Setting HTTP_PROXY env to %s", juju_http_proxy)
             self.env["HTTP_PROXY"] = juju_http_proxy
+            self.env["http_proxy"] = juju_http_proxy
             self.proxies["http"] = juju_http_proxy
         if juju_https_proxy:
             logger.debug("Setting HTTPS_PROXY env to %s", juju_https_proxy)
             self.env["HTTPS_PROXY"] = juju_https_proxy
+            self.env["https_proxy"] = juju_https_proxy
             self.proxies["https"] = juju_https_proxy
 
     def _install_packages(self):
@@ -145,8 +147,10 @@ class AutoAccept:
 
         proxy_env_vars = ""
         if "http" in self.proxies:
+            proxy_env_vars += "\nEnvironment=http_proxy=" + self.proxies["http"]
             proxy_env_vars += "\nEnvironment=HTTP_PROXY=" + self.proxies["http"]
         if "https" in self.proxies:
+            proxy_env_vars += "\nEnvironment=https_proxy=" + self.proxies["https"]
             proxy_env_vars += "\nEnvironment=HTTPS_PROXY=" + self.proxies["https"]
 
         service_content += proxy_env_vars
