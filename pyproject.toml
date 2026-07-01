@@ -7,7 +7,7 @@ dependencies = [
     "charmlibs-apt~=1.0",
     "charmlibs-pathops~=1.3.0",
     "charmlibs-systemd~=1.0",
-    "ops~=3.7",
+    "ops~=3.8",
     "pydantic",
 ]
 
