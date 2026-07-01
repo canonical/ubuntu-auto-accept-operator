@@ -4,7 +4,7 @@ annotated-types==0.7.0
     # via pydantic
 charmlibs-apt==1.0.0.post1
     # via ubuntu-auto-accept-operator (pyproject.toml)
-charmlibs-pathops==1.3.0
+charmlibs-pathops==1.3.0.post0
     # via ubuntu-auto-accept-operator (pyproject.toml)
 charmlibs-systemd==1.0.0.post0
     # via ubuntu-auto-accept-operator (pyproject.toml)
