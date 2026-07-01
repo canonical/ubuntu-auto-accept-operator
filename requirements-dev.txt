@@ -2,7 +2,7 @@
 #    uv pip compile --no-cache --all-extras pyproject.toml -o requirements-dev.txt
 annotated-types==0.7.0
     # via pydantic
-certifi==2026.5.20
+certifi==2026.6.17
     # via requests
 charmlibs-apt==1.0.0.post0
     # via ubuntu-auto-accept-operator (pyproject.toml)
@@ -12,24 +12,24 @@ charmlibs-systemd==1.0.0
     # via ubuntu-auto-accept-operator (pyproject.toml)
 charset-normalizer==3.4.7
     # via requests
-coverage==7.14.1
+coverage==7.14.3
     # via ubuntu-auto-accept-operator (pyproject.toml)
 idna==3.18
     # via requests
 iniconfig==2.3.0
     # via pytest
-jubilant==1.10.0
+jubilant==1.11.0
     # via ubuntu-auto-accept-operator (pyproject.toml)
-opentelemetry-api==1.42.1
+opentelemetry-api==1.43.0
     # via
     #   charmlibs-apt
     #   ops
-ops==3.7.1
+ops==3.8.0
     # via
     #   ubuntu-auto-accept-operator (pyproject.toml)
     #   charmlibs-pathops
     #   ops-scenario
-ops-scenario==8.7.1
+ops-scenario==8.8.0
     # via ops
 packaging==26.2
     # via pytest
@@ -37,11 +37,11 @@ pluggy==1.6.0
     # via pytest
 pydantic==2.13.4
     # via ubuntu-auto-accept-operator (pyproject.toml)
-pydantic-core==2.46.4
+pydantic-core==2.47.0
     # via pydantic
 pygments==2.20.0
     # via pytest
-pytest==9.0.3
+pytest==9.1.1
     # via ubuntu-auto-accept-operator (pyproject.toml)
 pyyaml==6.0.3
     # via
@@ -50,7 +50,7 @@ pyyaml==6.0.3
     #   ops-scenario
 requests==2.34.2
     # via ubuntu-auto-accept-operator (pyproject.toml)
-ruff==0.15.16
+ruff==0.15.20
     # via ubuntu-auto-accept-operator (pyproject.toml)
 typing-extensions==4.15.0
     # via
