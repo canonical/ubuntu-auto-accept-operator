@@ -12,13 +12,16 @@ SEED_WHITELIST = []
 PACKAGESET_WHITELIST = {"i386-excludes", "i386-whitelist"}
 SEEDED_IN_UBUNTU = "/usr/bin/seeded-in-ubuntu"
 PACKAGE_WHITELIST = []
+LP_TIMEOUT = 60  # seconds per Launchpad HTTP request
+SEEDED_IN_UBUNTU_TIMEOUT = 300  # seconds; the tool fetches seed data over the network
 
 DEBUG = 0
 if len(sys.argv) > 1 and sys.argv[1] == "debug":
     DEBUG = 1
 
 # Connect to Launchpad
-lp = Launchpad.login_with("auto-accept", "production", version="devel")
+lp = Launchpad.login_with("auto-accept", "production", version="devel",
+                          timeout=LP_TIMEOUT)
 ubuntu = lp.distributions['ubuntu']
 
 # Get the primary archive
@@ -57,25 +60,29 @@ for pkg in series.getPackageUploads(status=QUEUE, pocket=POCKET,
         continue
 
     # Extract all the seeds and skip if in any
-    seed = subprocess.Popen([SEEDED_IN_UBUNTU, pkg.package_name],
-                            universal_newlines=True, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    if seed.wait() != 0 or seed.stderr.read():
+    try:
+        seed = subprocess.run([SEEDED_IN_UBUNTU, pkg.package_name],
+                              capture_output=True, text=True,
+                              timeout=SEEDED_IN_UBUNTU_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        print("Skipping '%s' because seeded-in-ubuntu timed out" %
+              pkg.package_name)
+        continue
+    if seed.returncode != 0 or seed.stderr:
         if DEBUG:
             print("Skipping '%s' due to Invalid output from seeded-in-ubuntu: %s" %
-                  (pkg.package_name, seed.stderr.read().strip()))
+                  (pkg.package_name, seed.stderr.strip()))
         continue
 
     seeds = set()
-    for line in seed.stdout:
+    for line in seed.stdout.splitlines():
         if not line.startswith("  "):
             continue
 
-        line = line.strip()
-        seed = line.split(":")[0]
-        if seed in SEED_WHITELIST:
+        seed_name = line.strip().split(":")[0]
+        if seed_name in SEED_WHITELIST:
             continue
-        seeds.add(seed)
+        seeds.add(seed_name)
 
     if seeds:
         if DEBUG:
