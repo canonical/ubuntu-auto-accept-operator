@@ -85,7 +85,7 @@ def test_script_skips_package_when_seeded_in_ubuntu_fails(monkeypatch, launchpad
     launchpad.pkg.acceptFromQueue.assert_not_called()
 
 
-def test_script_skips_package_seeded_in_ubuntu(monkeypatch, launchpad):
+def test_script_skips_package_when_seeded_in_non_whitelisted_seed(monkeypatch, launchpad):
     _seeded_in_ubuntu(monkeypatch, stdout="hello 1.0 is seeded in:\n  ubuntu: desktop\n")
 
     runpy.run_path(SCRIPT)
