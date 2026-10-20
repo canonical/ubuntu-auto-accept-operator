@@ -30,7 +30,4 @@ After making code changes, and before proposing or presenting them, always:
 
 ## Dependency Files
 
-Use the Makefile targets instead of calling `uv` directly when updating project dependencies:
-
-1. Run `make update-dependencies` to refresh `uv.lock`.
-2. Run `make generate-requirements` to regenerate `requirements.txt` and `requirements-dev.txt`.
+Use the Makefile target instead of calling `uv` directly when updating project dependencies: run `make update-dependencies` to refresh `uv.lock`.
